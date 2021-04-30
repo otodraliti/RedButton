@@ -10,6 +10,10 @@ TagManager:
   - LeftButton
   - MainUI
   - DeathUI
+  - HighScore
+  - Motivation
+  - Tutorial
+  - Start
   layers:
   - Default
   - TransparentFX
