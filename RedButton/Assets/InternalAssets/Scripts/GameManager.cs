@@ -19,7 +19,8 @@ public class GameManager : MonoBehaviour
     public Sprite InCorrect;
     private GameObject mainUI;
     public GameObject deathUI;
-
+    public AudioSource CorrectSound;
+    public AudioSource InCorrectSound;
 
     private GameObject rightButton;
     private GameObject leftButton;
@@ -65,6 +66,10 @@ public class GameManager : MonoBehaviour
             }
         }
         timerNum -= Time.deltaTime;
+        if (timerNum <= 0)
+        {
+            death();
+        }
         counterText.text = counterNum.ToString("");
         timerText.text = timerNum.ToString("0.0");
         if (isDead == true)
@@ -75,6 +80,9 @@ public class GameManager : MonoBehaviour
             }
         }
     }
+
+
+
 
     private void SwitchPose()
     {
@@ -128,9 +136,8 @@ public class GameManager : MonoBehaviour
         {
             case 1:
                 {
+                    InCorrectSound.GetComponent<AudioSource>().Play();
                     death();
-
-
                     return;
                 }
             case 2:
@@ -141,6 +148,7 @@ public class GameManager : MonoBehaviour
                     }
                     timerNum = maxTimerNum;
                     counterNum += 1;
+                    CorrectSound.GetComponent<AudioSource>().Play();
                     SwitchPose();
                     return;
                 }
@@ -158,11 +166,13 @@ public class GameManager : MonoBehaviour
                     }
                     timerNum = maxTimerNum;
                     counterNum += 1;
+                    CorrectSound.GetComponent<AudioSource>().Play();
                     SwitchPose();
                     return;
                 }
             case 2:
                 {
+                    InCorrectSound.GetComponent<AudioSource>().Play();
                     death();
                     return;
                 }
