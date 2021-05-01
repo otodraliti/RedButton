@@ -22,7 +22,6 @@ public class MenuManager : MonoBehaviour
         highScore.text = PlayerPrefs.GetInt("highScore").ToString("");
     }
 
-    // Update is called once per frame
     void Update()
     {
         if (HighScoreNum <= 0)

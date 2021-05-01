@@ -14,6 +14,8 @@ TagManager:
   - Motivation
   - Tutorial
   - Start
+  - CorrectSound
+  - InCorrectSound
   layers:
   - Default
   - TransparentFX

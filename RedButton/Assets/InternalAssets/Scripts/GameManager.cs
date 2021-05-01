@@ -1,12 +1,11 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 
 public class GameManager : MonoBehaviour
 {
-
+    // Variables
+    #region
     private Text counterText;
     private int counterNum;
     private int highScore;
@@ -15,47 +14,89 @@ public class GameManager : MonoBehaviour
     private float timerNum;
     private float maxTimerNum = 10f;
 
-    public Sprite Correct;
-    public Sprite InCorrect;
+    private Sprite correct;
+    private Sprite inCorrect;
+    private AudioSource correctSound;
+    private AudioSource inCorrectSound;
+    
     private GameObject mainUI;
-    public GameObject deathUI;
-    public AudioSource CorrectSound;
-    public AudioSource InCorrectSound;
+    public GameObject _DeathUI;
+
 
     private GameObject rightButton;
     private GameObject leftButton;
 
     private int Condiotion;
     private bool isDead;
-   
+    private bool isLoadComplete;
+    #endregion
+
+    //Main Functions
+    #region
     private void Awake()
+    {
+        Application.targetFrameRate = 60;
+        SetVariables();
+    }
+    private void Start()
+    {
+        correct = Resources.Load<Sprite>("trollnest_check-normal");
+        inCorrect = Resources.Load<Sprite>("trollnest_cancel-normal");
+
+        timerNum = maxTimerNum;
+        SwitchPose();
+    }
+    private void Update()
+    {
+        SaveNLoad();
+        TextManager();
+        if (isDead == true)
+        {
+            if (Input.GetMouseButtonDown(0))
+            {
+                SceneManager.LoadScene("MainMenu");
+            }
+        }
+    }
+    #endregion
+
+    //Preparation Functions
+    #region
+    private void SetVariables()
     {
         counterText = GameObject.FindGameObjectWithTag("Counter").GetComponent<Text>();
         timerText = GameObject.FindGameObjectWithTag("Timer").GetComponent<Text>();
-        
+
         rightButton = GameObject.FindGameObjectWithTag("RightButton");
         leftButton = GameObject.FindGameObjectWithTag("LeftButton");
 
         mainUI = GameObject.FindGameObjectWithTag("MainUI");
 
         highScore = PlayerPrefs.GetInt("HighScore");
-    }
-    private void Start()
-    {
-        timerNum = maxTimerNum;
-        SwitchPose();
+
+        correctSound = GameObject.FindGameObjectWithTag("CorrectSound").GetComponent<AudioSource>();
+        inCorrectSound = GameObject.FindGameObjectWithTag("InCorrectSound").GetComponent<AudioSource>();
     }
 
 
-    private bool isloadComplete;
-
-    private void Update()
+    private void TextManager()
     {
+        counterText.text = counterNum.ToString("");
+        timerText.text = timerNum.ToString("0.0");
         
-        if (isloadComplete == false)
+        timerNum -= Time.deltaTime;
+        if (timerNum <= 0)
         {
+            death();
+        }
+    }
+    private void SaveNLoad()
+    {
+        if (isLoadComplete == false)
+        {
+
             highScore = PlayerPrefs.GetInt("highScore");
-            isloadComplete = true;
+            isLoadComplete = true;
         }
         else
         {
@@ -65,39 +106,25 @@ public class GameManager : MonoBehaviour
                 PlayerPrefs.SetInt("highScore", highScore);
             }
         }
-        timerNum -= Time.deltaTime;
-        if (timerNum <= 0)
-        {
-            death();
-        }
-        counterText.text = counterNum.ToString("");
-        timerText.text = timerNum.ToString("0.0");
-        if (isDead == true)
-        {
-            if (Input.GetMouseButtonDown(0))
-            {
-                SceneManager.LoadScene(SceneManager.GetActiveScene().name);
-            }
-        }
     }
+    #endregion
 
-
-
-
+    //Game Functionality
+    #region
     private void SwitchPose()
     {
         int randomNum = Random.Range(0, 100);
         int RandomColor = Random.Range(0, 100);
         if (randomNum > 50)
         {
-            rightButton.transform.GetChild(0).gameObject.GetComponent<Image>().sprite = Correct;
-            leftButton.transform.GetChild(0).gameObject.GetComponent<Image>().sprite = InCorrect;
+            rightButton.transform.GetChild(0).gameObject.GetComponent<Image>().sprite = correct;
+            leftButton.transform.GetChild(0).gameObject.GetComponent<Image>().sprite = inCorrect;
             Condiotion = 1;
         }
         else
         {
-            rightButton.transform.GetChild(0).gameObject.GetComponent<Image>().sprite = InCorrect;
-            leftButton.transform.GetChild(0).gameObject.GetComponent<Image>().sprite = Correct;
+            rightButton.transform.GetChild(0).gameObject.GetComponent<Image>().sprite = inCorrect;
+            leftButton.transform.GetChild(0).gameObject.GetComponent<Image>().sprite = correct;
             Condiotion = 2;
         }
         if (RandomColor <= 25 && RandomColor >= 0)
@@ -117,38 +144,39 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    void death()
+    private void death()
     {
         mainUI.gameObject.SetActive(false);
-        deathUI.gameObject.SetActive(true);
+        _DeathUI.gameObject.SetActive(true);
         if (counterNum > highScore)
         {
             highScore = counterNum;
             PlayerPrefs.SetInt("highScore", highScore);
         }
-        deathUI.transform.GetChild(1).gameObject.transform.GetChild(0).GetComponent<Text>().text = counterNum.ToString("");
-        deathUI.transform.GetChild(2).gameObject.transform.GetChild(0).GetComponent<Text>().text = highScore.ToString("");
+        _DeathUI.transform.GetChild(1).gameObject.transform.GetChild(0).GetComponent<Text>().text = counterNum.ToString("");
+        _DeathUI.transform.GetChild(2).gameObject.transform.GetChild(0).GetComponent<Text>().text = highScore.ToString("");
         isDead = true;
     }
+
     public void LeftButton()
     {
         switch (Condiotion)
         {
             case 1:
                 {
-                    InCorrectSound.GetComponent<AudioSource>().Play();
+                    inCorrectSound.GetComponent<AudioSource>().Play();
                     death();
                     return;
                 }
             case 2:
                 {
-                    if (maxTimerNum > 1f)
+                    if (maxTimerNum > 0.5f)
                     {
                         maxTimerNum -= 0.1f;
                     }
                     timerNum = maxTimerNum;
                     counterNum += 1;
-                    CorrectSound.GetComponent<AudioSource>().Play();
+                    correctSound.GetComponent<AudioSource>().Play();
                     SwitchPose();
                     return;
                 }
@@ -160,22 +188,23 @@ public class GameManager : MonoBehaviour
         {
             case 1:
                 {
-                    if (maxTimerNum > 1f)
+                    if (maxTimerNum > 0.5f)
                     {
                         maxTimerNum -= 0.1f;
                     }
                     timerNum = maxTimerNum;
                     counterNum += 1;
-                    CorrectSound.GetComponent<AudioSource>().Play();
+                    correctSound.GetComponent<AudioSource>().Play();
                     SwitchPose();
                     return;
                 }
             case 2:
                 {
-                    InCorrectSound.GetComponent<AudioSource>().Play();
+                    inCorrectSound.GetComponent<AudioSource>().Play();
                     death();
                     return;
                 }
         }
     }
+    #endregion
 }
