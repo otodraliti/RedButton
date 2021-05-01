@@ -54,7 +54,7 @@ public class GameManager : MonoBehaviour
         {
             if (Input.GetMouseButtonDown(0))
             {
-                SceneManager.LoadScene("MainMenu");
+                SceneManager.LoadScene("GameScene");
             }
         }
     }
