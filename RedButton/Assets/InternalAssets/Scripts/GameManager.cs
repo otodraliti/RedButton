@@ -12,7 +12,7 @@ public class GameManager : MonoBehaviour
 
     private Text timerText;
     private float timerNum;
-    private float maxTimerNum = 10f;
+    private float maxTimerNum = 5f;
 
     private Sprite correct;
     private Sprite inCorrect;
@@ -170,7 +170,7 @@ public class GameManager : MonoBehaviour
                 }
             case 2:
                 {
-                    if (maxTimerNum > 0.5f)
+                    if (maxTimerNum > 0.3f)
                     {
                         maxTimerNum -= 0.1f;
                     }
@@ -188,7 +188,7 @@ public class GameManager : MonoBehaviour
         {
             case 1:
                 {
-                    if (maxTimerNum > 0.5f)
+                    if (maxTimerNum > 0.3f)
                     {
                         maxTimerNum -= 0.1f;
                     }
