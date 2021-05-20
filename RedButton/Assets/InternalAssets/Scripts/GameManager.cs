@@ -20,7 +20,7 @@ public class GameManager : MonoBehaviour
     private AudioSource inCorrectSound;
     
     private GameObject mainUI;
-    public GameObject _DeathUI;
+    [SerializeField] private GameObject _DeathUI;
 
 
     private GameObject rightButton;
